@@ -11,11 +11,11 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@fastgpt-plugin/cli": "catalog:",
-    "@fastgpt-plugin/sdk-factory": "catalog:",
-    "@types/node": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:",
-    "zod": "catalog:"
+    "@fastgpt-plugin/cli": "0.2.0",
+    "@fastgpt-plugin/sdk-factory": "0.0.1",
+    "@types/node": "^22",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18",
+    "zod": "^4.3.6"
   }
 }
