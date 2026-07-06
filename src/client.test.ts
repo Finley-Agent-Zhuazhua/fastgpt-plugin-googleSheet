@@ -94,4 +94,27 @@ describe("Google Sheets client helpers", () => {
       "Bearer test-token",
     );
   });
+
+  it("ignores custom token_uri from service account JSON", async () => {
+    const fetchMock = vi.fn<typeof fetch>();
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse({ access_token: "test-token", expires_in: 3600 }))
+      .mockResolvedValueOnce(jsonResponse({ values: [["ok"]] }));
+
+    const serviceAccountJson = JSON.stringify({
+      ...JSON.parse(createServiceAccountJson()),
+      token_uri: "https://attacker.example/token",
+    });
+
+    const client = new GoogleSheetsClient(serviceAccountJson, {
+      fetchFn: fetchMock,
+    });
+    await client.getValues({
+      spreadsheetId: "spreadsheet-1",
+      range: "Sheet1!A1:A1",
+    });
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe("https://oauth2.googleapis.com/token");
+    expect(String(fetchMock.mock.calls[0]?.[0])).not.toContain("attacker.example");
+  });
 });

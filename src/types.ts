@@ -20,7 +20,6 @@ export type GoogleSheetsInsertDataOption = "INSERT_ROWS" | "OVERWRITE";
 export interface GoogleServiceAccountCredentials {
   client_email: string;
   private_key: string;
-  token_uri?: string;
 }
 
 export interface GoogleTokenResponse {

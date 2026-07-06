@@ -149,7 +149,7 @@ export class GoogleSheetsClient {
 
   private async getAccessToken(): Promise<string> {
     const credentials = parseServiceAccountCredentials(this.serviceAccountJson);
-    const cacheKey = `${credentials.client_email}:${credentials.token_uri || GOOGLE_TOKEN_URI}`;
+    const cacheKey = `${credentials.client_email}:${GOOGLE_TOKEN_URI}`;
     const cached = tokenCache.get(cacheKey);
 
     if (cached && cached.expiresAt > this.now() + 5 * 60 * 1000) {
@@ -157,7 +157,7 @@ export class GoogleSheetsClient {
     }
 
     const assertion = createJwtAssertion(credentials);
-    const response = await this.fetchFn(credentials.token_uri || GOOGLE_TOKEN_URI, {
+    const response = await this.fetchFn(GOOGLE_TOKEN_URI, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -209,7 +209,7 @@ export function parseServiceAccountCredentials(
     throw new Error("Google service account JSON must be an object");
   }
 
-  const { client_email, private_key, token_uri } =
+  const { client_email, private_key } =
     credentials as Partial<GoogleServiceAccountCredentials>;
 
   if (!client_email?.trim()) {
@@ -224,10 +224,6 @@ export function parseServiceAccountCredentials(
     client_email,
     private_key: normalizePrivateKey(private_key),
   };
-
-  if (token_uri?.trim()) {
-    parsedCredentials.token_uri = token_uri;
-  }
 
   return parsedCredentials;
 }
@@ -285,7 +281,7 @@ function createJwtAssertion(credentials: GoogleServiceAccountCredentials): strin
   const payload = {
     iss: credentials.client_email,
     scope: GOOGLE_SHEETS_SCOPE,
-    aud: credentials.token_uri || GOOGLE_TOKEN_URI,
+    aud: GOOGLE_TOKEN_URI,
     exp: now + 3600,
     iat: now,
   };
